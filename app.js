@@ -37,6 +37,7 @@ app.use(body_parser.json()); // to support JSON-encoded bodies
 // --- VIEW LOCATION, SET UP SERVING STATIC HTML
 app.set('views', __dirname + '/public/views');
 app.set('stimuli', __dirname + '/public/stimuli');
+app.set('img', __dirname + '/public/img');
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
