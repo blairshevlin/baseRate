@@ -30,7 +30,7 @@
     var testing = false;
 
     //REAL Consequences?
-    var real_reward = true;
+    var real_reward = false;
 
     // CREATE TIMELINE
     var timeline = [];
@@ -44,7 +44,7 @@
         type: 'html-keyboard-response',
         stimulus: '<div style="font-size:60px;">+</div>',
         choices: jsPsych.NO_KEYS,
-        trial_duration: 300,
+        trial_duration: 500,
     };
 
     var trial_count = 1;
@@ -133,11 +133,11 @@
     };
     timeline.push(preload);
 
-    const shuffled_practice_images = jsPsych.randomization.shuffle(practice_imgs);
-    const shuffled_good_healthy_images = jsPsych.randomization.shuffle(good_healthy_imgs);
-    const shuffled_good_unhealthy_images = jsPsych.randomization.shuffle(good_unhealthy_imgs);
-    const shuffled_bad_healthy_images = jsPsych.randomization.shuffle(bad_healthy_imgs);
-    const shuffled_bad_unhealthy_images = jsPsych.randomization.shuffle(bad_unhealthy_imgs);
+    var shuffled_practice_images = jsPsych.randomization.shuffle(practice_imgs);
+    var shuffled_good_healthy_images = jsPsych.randomization.shuffle(good_healthy_imgs);
+    var shuffled_good_unhealthy_images = jsPsych.randomization.shuffle(good_unhealthy_imgs);
+    var shuffled_bad_healthy_images = jsPsych.randomization.shuffle(bad_healthy_imgs);
+    var shuffled_bad_unhealthy_images = jsPsych.randomization.shuffle(bad_unhealthy_imgs);
 
     // Task parameters
 
@@ -557,16 +557,16 @@ if(real_reward==true){
                 practice_fail: practice_fail,
                 failure: 'FALSE'
             });
-        //$.ajax({
-        //  type: "POST",
-        //  url: "/experiment-data",
-        //  data: JSON.stringify(jsPsych.data.get().values()),
-        //  contentType: "application/json",
-        //  success: window.location.href = "finish"
-        //}).fail(function() {
-       //   alert("A problem occurred while writing to the database. Please contact the researcher for more information.")
-        //  window.location.href = "/";
-       // });
+        $.ajax({
+          type: "POST",
+          url: "/experiment-data",
+          data: JSON.stringify(jsPsych.data.get().values()),
+          contentType: "application/json",
+          success: window.location.href = "finish"
+        }).fail(function() {
+          alert("A problem occurred while writing to the database. Please contact the researcher for more information.")
+          window.location.href = "/";
+        });
      }}
     )
 
