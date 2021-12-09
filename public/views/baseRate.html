@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>OSU Study</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="jsPsych//jspsych.js"></script>
+    <script src="jsPsych/jspsych-html-keyboard-response.js"></script>
+    <script src="jsPsych/jspsych-image-keyboard-response.js"></script>
+    <script src="jsPsych/jspsych-html-button-response.js"></script>
+    <script src="jsPsych/jspsych-xab.js"></script>
+    <script src="jsPsych/jspsych-survey-text.js"></script>
+    <script src="jsPsych/jspsych-econ-choice.js"></script>
+    <script src="jsPsych/jspsych-fullscreen.js"></script>
+    <script src="jsPsych/jspsych-combinations.js"></script>
+    <script src="jsPsych/jspsych-preload.js"></script>
+    <link rel="stylesheet" type="text/css" href="jsPsych/css/jspsych.css"></link>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <canvas id="myChart" width='100' height='100'></canvas>
+    <style>
+        .stimulus { font-size: 40px; }
+    </style>
+</head>
+
+<body>
+</body>
+<script>
+
+    //TESTING ?
+    var testing = false;
+
+    //REAL Consequences?
+    var real_reward = true;
+
+    // CREATE TIMELINE
+    var timeline = [];
+    //Subject ID
+    var subject_id = jsPsych.randomization.randomID(7);
+    //Turk Info
+    var turkInfo = jsPsych.turk.turkInfo();
+
+    // Fixation
+    var fixation = {
+        type: 'html-keyboard-response',
+        stimulus: '<div style="font-size:60px;">+</div>',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 300,
+    };
+
+    var trial_count = 1;
+
+    //Pre-load images
+    var practice_imgs = []; var healthy_imgs = []; var unhealthy_imgs = [];
+    var good_healthy_imgs = []; var bad_healthy_imgs = [];
+    var good_unhealthy_imgs = []; var bad_unhealthy_imgs = [];
+    practice_imgs.push(["stimuli/FoodImages/practice1.JPG",
+        "stimuli/FoodImages/practice2.JPG",
+        "stimuli/FoodImages/practice3.JPG",
+        "stimuli/FoodImages/practice4.JPG",
+        "stimuli/FoodImages/practice5.JPG",
+        "stimuli/FoodImages/practice6.JPG",]
+    );
+    good_healthy_imgs.push([
+        "stimuli/FoodImages/healthy17.jpg", //r = 7.00, p = .69
+        "stimuli/FoodImages/healthy35.jpg", //r = 7.03, p = .61
+
+    ]);
+    bad_healthy_imgs.push([
+        "stimuli/FoodImages/healthy27.jpg", //r = 5.24, p = .44
+        "stimuli/FoodImages/healthy32.jpg", //r = 5.92, p = .48
+    ]);
+    good_unhealthy_imgs.push([
+        "stimuli/FoodImages/unhealthy19.jpg", //r = 8.06, p = .75
+        "stimuli/FoodImages/unhealthy35.jpg", //r = 7.96, p = .69
+    ]);
+    bad_unhealthy_imgs.push([
+        "stimuli/FoodImages/healthy10.jpg", //r = 4.46, p = .50
+        "stimuli/FoodImages/healthy38.jpg", //r = 3.97, p = .50
+    ]);
+/*
+    healthy_imgs.push(["stimuli/FoodImages/healthy0.jpg",
+    "stimuli/FoodImages/healthy1.jpg", "stimuli/FoodImages/healthy10.jpg",
+    "stimuli/FoodImages/healthy11.jpg", "stimuli/FoodImages/healthy12.jpg",
+    "stimuli/FoodImages/healthy13.jpg","stimuli/FoodImages/healthy14.jpg",
+    "stimuli/FoodImages/healthy15.jpg", "stimuli/FoodImages/healthy16.jpg",
+    "stimuli/FoodImages/healthy17.jpg", "stimuli/FoodImages/healthy18.jpg",
+    "stimuli/FoodImages/healthy19.jpg","stimuli/FoodImages/healthy2.jpg",
+    "stimuli/FoodImages/healthy20.jpg", "stimuli/FoodImages/healthy21.jpg",
+    "stimuli/FoodImages/healthy22.jpg", "stimuli/FoodImages/healthy23.jpg",
+    "stimuli/FoodImages/healthy24.jpg", "stimuli/FoodImages/healthy25.jpg",
+    "stimuli/FoodImages/healthy26.jpg", "stimuli/FoodImages/healthy27.jpg",
+    "stimuli/FoodImages/healthy28.jpg", "stimuli/FoodImages/healthy29.jpg",
+    "stimuli/FoodImages/healthy3.jpg", "stimuli/FoodImages/healthy30.jpg", 
+    "stimuli/FoodImages/healthy31.jpg","stimuli/FoodImages/healthy32.jpg", 
+    "stimuli/FoodImages/healthy33.jpg", "stimuli/FoodImages/healthy34.jpg",
+    "stimuli/FoodImages/healthy35.jpg", "stimuli/FoodImages/healthy36.jpg",
+    "stimuli/FoodImages/healthy37.jpg", "stimuli/FoodImages/healthy38.jpg",
+    "stimuli/FoodImages/healthy39.jpg", "stimuli/FoodImages/healthy4.jpg",
+    "stimuli/FoodImages/healthy5.jpg", "stimuli/FoodImages/healthy6.jpg",  
+    "stimuli/FoodImages/healthy7.jpg",  "stimuli/FoodImages/healthy8.jpg",
+    "stimuli/FoodImages/healthy9.jpg"]);
+
+    unhealthy_imgs.push(["stimuli/FoodImages/unhealthy0.jpg",
+    "stimuli/FoodImages/unhealthy1.jpg", "stimuli/FoodImages/unhealthy10.jpg",
+    "stimuli/FoodImages/unhealthy11.jpg", "stimuli/FoodImages/unhealthy12.jpg",
+    "stimuli/FoodImages/unhealthy13.jpg","stimuli/FoodImages/unhealthy14.jpg",
+    "stimuli/FoodImages/unhealthy15.jpg", "stimuli/FoodImages/unhealthy16.jpg",
+    "stimuli/FoodImages/unhealthy17.jpg", "stimuli/FoodImages/unhealthy18.jpg",
+    "stimuli/FoodImages/unhealthy19.jpg","stimuli/FoodImages/unhealthy2.jpg",
+    "stimuli/FoodImages/unhealthy20.jpg", "stimuli/FoodImages/unhealthy21.jpg",
+    "stimuli/FoodImages/unhealthy22.jpg", "stimuli/FoodImages/unhealthy23.jpg",
+    "stimuli/FoodImages/unhealthy24.jpg", "stimuli/FoodImages/unhealthy25.jpg",
+    "stimuli/FoodImages/unhealthy26.jpg", "stimuli/FoodImages/unhealthy27.jpg",
+    "stimuli/FoodImages/unhealthy28.jpg", "stimuli/FoodImages/unhealthy29.jpg",
+    "stimuli/FoodImages/unhealthy3.jpg", "stimuli/FoodImages/unhealthy30.jpg", 
+    "stimuli/FoodImages/unhealthy31.jpg","stimuli/FoodImages/unhealthy32.jpg", 
+    "stimuli/FoodImages/unhealthy33.jpg", "stimuli/FoodImages/unhealthy34.jpg",
+    "stimuli/FoodImages/unhealthy35.jpg", "stimuli/FoodImages/unhealthy36.jpg",
+    "stimuli/FoodImages/unhealthy37.jpg", "stimuli/FoodImages/unhealthy38.jpg",
+    "stimuli/FoodImages/unhealthy39.jpg", "stimuli/FoodImages/unhealthy4.jpg",
+    "stimuli/FoodImages/unhealthy5.jpg", "stimuli/FoodImages/unhealthy6.jpg",  
+    "stimuli/FoodImages/unhealthy7.jpg",  "stimuli/FoodImages/unhealthy8.jpg",
+    "stimuli/FoodImages/unhealthy9.jpg"]);
+*/
+    var preload = {
+        type: 'preload',
+        auto_preload: false,  
+        images: [practice_imgs,
+            good_unhealthy_imgs,
+            good_healthy_imgs,
+            bad_unhealthy_imgs,
+            bad_healthy_imgs], //healthy_imgs,unhealthy_imgs],
+    };
+    timeline.push(preload);
+
+    const shuffled_practice_images = jsPsych.randomization.shuffle(practice_imgs);
+    const shuffled_good_healthy_images = jsPsych.randomization.shuffle(good_healthy_imgs);
+    const shuffled_good_unhealthy_images = jsPsych.randomization.shuffle(good_unhealthy_imgs);
+    const shuffled_bad_healthy_images = jsPsych.randomization.shuffle(bad_healthy_imgs);
+    const shuffled_bad_unhealthy_images = jsPsych.randomization.shuffle(bad_unhealthy_imgs);
+
+    // Task parameters
+
+    // FULLSCREEN
+    var fullscreen = {
+        type: 'fullscreen',
+        fullscreen_mode: true
+    };
+
+    // WELCOME MESSAGE
+
+    var welcome = {
+        type: "html-keyboard-response",
+        stimulus: "Welcome to the study. Press the SPACE BAR to begin.",
+        choices: [" "]
+    };
+
+    //Intro demographic screen
+    var demo = {
+        type: 'survey-text',
+        preamble: "<p>Thanks for choosing our experiment! Please answer the following questions to begin today's study.</p>",
+        questions: [
+            {prompt: "What is your worker ID?", name: 'workerID'}, 
+            {prompt: "What is your age?", name: 'Age'},
+            {prompt: "What is your gender identify? (Female/Male/Non-binary/Other/Prefer not to say", name: "Gender"}
+        ],
+    };
+
+    if(testing==false){
+        timeline.push(fullscreen);
+        timeline.push(welcome);
+        timeline.push(demo);
+    };
+
+    //For when people fail the practice of either section
+    var studyEnd = {
+        type: 'html-keyboard-response',
+        stimulus: `<p> You failed the practice three times. Unfortunately, you will not be able to complete the study.</p>
+        <p>Press the Space Bar to exit out of the study.</p>`,
+        choices: [" "],
+        on_finish:  function () {
+            jsPsych.data.addProperties({
+                subject: subject_id,
+                workerID: turkInfo.workerId,
+                assignmentID: turkInfo.assignmentId,
+                hitID: turkInfo.hitId,
+                failure: 'TRUE'
+            });
+        }
+    };
+
+    //INSTRUCTIONS AND PRACTICE SCREENS
+ 
+    var intro_instr = {
+        type: "html-keyboard-response",
+        stimulus: "<p>In this task, you will make some choices involving snack foods.</p>" + 
+        "<p>You will always be choosing between two foods, one healthy and one unhealthy.</p>" + 
+        "<p>You need to use the <b>F</b> and <b>J</b> keys to make each choice.</p>" + 
+        "<p>Press the SPACE BAR to see an example.</p>",
+        choices: [" "]
+    };
+
+    var intro_example_trial = {
+      type: "html-keyboard-response",
+      stimulus: function(){
+      return `<div class="container-multi-choice-column" id= "multiattribute-choices-stimulus-left" style ="position:fixed; TOP:50%; LEFT:25%; transform: translate(-50%, -50%); line-height: 0" >
+            <div id="multiattribute-choices-stimulus-left" ><img style = "WIDTH:400px" src="${jsPsych.timelineVariable('image1', true)}"/></div>
+            </div>
+            <div class="container-multi-choice-column" id= "multiattribute-choices-stimulus-right" style="position:fixed; TOP:50%; LEFT:75%; transform: translate(-50%, -50%); line-height: 0">
+            <div id="multiattribute-choices-stimulus-right" ><img style = "WIDTH:400px" src="${jsPsych.timelineVariable('image2', true)}"/ ></div>
+            </div>
+            <p style = "position: absolute; bottom: 15%; left: 0; width: 100%; text-align: center;">Press the SPACE BAR to continue</p>`
+        },
+      choices: [" "],
+
+    };
+
+    const intro_trial = {
+        timeline: [intro_example_trial],
+        timeline_variables: [
+        {image1: shuffled_practice_images[0][0], image2: shuffled_practice_images[0][1]}
+        ]
+    };
+
+    var practice_instr1 = {
+        type: "html-keyboard-response",
+        stimulus: "<p>Now that you have seen an example choice, you will now complete a practice round. On the next screen, you will see two new foods. To choose the option on the <b>left</b> use the <b>F key</b>, and to choose the option on the <b>right</b>, use the <b>J key</b>.</p>"+
+        "<p>Press the SPACE BAR to practice.</p>",
+        choices: [" "]
+    };
+
+    var practice_trial1 = {
+        type: "econ-choice",
+        stimulus: [shuffled_practice_images[0][2],shuffled_practice_images[0][3]]
+    };
+
+    var_practice_instr2 = {
+        type: "html-keyboard-response",
+        stimulus: "<p>You will now complete another practice round. This time, we want you to choose the option on the <b>right</b>.</p>"+
+        "<p>When you are ready, press the SPACE BAR to begin.</p>",
+        choices: [" "]
+    };
+
+    var practice_trial2 = {
+        type: "econ-choice",
+        stimulus: [shuffled_practice_images[0][4],shuffled_practice_images[0][5]]
+    };
+
+    var practice_error = {
+        type: "html-keyboard-response",
+        stimulus: "<p>Let's try that again. Remember, we want you to choose the the option on the <b>right</b>.</p>"+
+        "<p>When you are ready, press the SPACE BAR to begin.</p>",
+        choices: [" "]
+    };
+
+    var practice_fail = 0;
+    var practice_cond_fail1 = {
+        timeline: [practice_error, fixation, practice_trial2],
+        conditional_function: function () {
+            var data = jsPsych.data.get().last(1).values()[0];
+            if (data.key_press == 'j') {
+                return false;
+            } else {
+                practice_fail++;
+                return true;
+            }
+        }
+    };
+    var practice_cond_fail2 = {
+        timeline: [practice_error, fixation, practice_trial2],
+        conditional_function: function () {
+            var data = jsPsych.data.get().last(1).values()[0];
+            if (data.key_press == 'j') {
+                return false;
+            } else {
+                practice_fail++;
+                return true;
+            }
+        }
+    };
+
+    var practice_cond_fail3 = {
+        timeline: [studyEnd],
+        conditional_function: function () {
+            var data = jsPsych.data.get().last(1).values()[0];
+            if (data.key_press == 'j') {
+                return false;
+            } else {
+                practice_fail++;
+                return true;
+            };
+        }
+    };
+
+    var instr_timeline = {
+        timeline: [intro_instr,intro_trial,practice_instr1,fixation,practice_trial1,fixation,var_practice_instr2,practice_trial2,practice_cond_fail1,practice_cond_fail2,practice_cond_fail3],
+    }
+    timeline.push(instr_timeline);
+
+    var unhealthyLeft_instr_t1 = {
+        type: "html-keyboard-response",
+        choices: [" "],
+        stimulus: "<p>Now you can move on to the real choices.</p>"+
+        "<p>You are in a virtual shop where you are choosing between the two foods presented to you. In this shop, the unhealthy foods are generally better than the healthy foods.</p>"+
+        "<p>The unhealthy foods will always be on the left, and the healthy foods will always be on the right.</p>"+
+        //"<p>These are real decisions. Again, at the end of the study you may actually receive a shipment of food based on one of your choices</p>"+
+        "<p>Please press the spacebar to continue to the choices.</p>",
+
+    };
+    var unhealthyLeft_instr_t2 = {
+        type: "html-keyboard-response",
+        choices: [" "],
+        stimulus: "<p>This time, you are in a virtual shop where you are choosing between the two foods presented to you. In this shop, the unhealthy foods are generally better than the healthy foods.</p>"+
+        "<p>The unhealthy foods will always be on the left, and the healthy foods will always be on the right.</p>"+
+        //"<p>These are real decisions. Again, at the end of the study you may actually receive a shipment of food based on one of your choices</p>"+
+        "<p>Please press the spacebar to continue to the choices.</p>",
+
+    };
+    var unhealthyRight_instr_t1 = {
+        type: "html-keyboard-response",
+        choices: [" "],
+        stimulus: "<p>Now you can move on to the real choices.</p>"+
+        "<p>You are in a virtual shop where you are choosing between the two foods presented to you. In this shop, the unhealthy foods are generally better than the healthy foods.</p>"+
+        "<p>The unhealthy foods will always be on the right, and the healthy foods will always be on the left.</p>"+
+        //"<p>These are real decisions. Again, at the end of the study you may actually receive a shipment of food based on one of your choices</p>"+
+        "<p>Please press the spacebar to continue to the choices.</p>",
+
+    };
+    var unhealthyRight_instr_t2 = {
+        type: "html-keyboard-response",
+        choices: [" "],
+        stimulus:
+        "<p>This time, you are in a virtual shop where you are choosing between the two foods presented to you. In this shop, the unhealthy foods are generally better than the healthy foods.</p>"+
+        "<p>The unhealthy foods will always be on the right, and the healthy foods will always be on the left.</p>"+
+       // "<p>These are real decisions. Again, at the end of the study you may actually receive a shipment of food based on one of your choices</p>"+
+        "<p>Please press the spacebar to continue to the choices.</p>",
+
+    };
+    var healthyLeft_instr_t1 = {
+        type: "html-keyboard-response",
+        choices: [" "],
+        stimulus: "<p>Now you can move on to the real choices.</p>"+
+        "<p>You are in a virtual shop where you are choosing between the two foods presented to you. In this shop, the healthy foods are generally better than the unhealthy foods.</p>"+
+        "<p>The healthy foods will always be on the left, and the unhealthy foods will always be on the right.</p>"+
+        //"<p>These are real decisions. Again, at the end of the study you may actually receive a shipment of food based on one of your choices</p>"+
+        "<p>Please press the spacebar to continue to the choices.</p>",
+
+    };
+    var healthyLeft_instr_t2 = {
+        type: "html-keyboard-response",
+        choices: [" "],
+        stimulus:"<p>This time, you are in a virtual shop where you are choosing between the two foods presented to you. In this shop, the healthy foods are generally better than the unhealthy foods.</p>"+
+        "<p>The healthy foods will always be on the left, and the unhealthy foods will always be on the right.</p>"+
+       // "<p>These are real decisions. Again, at the end of the study you may actually receive a shipment of food based on one of your choices</p>"+
+        "<p>Please press the spacebar to continue to the choices.</p>",
+
+    };
+    var healthyRight_instr_t1 = {
+        type: "html-keyboard-response",
+        choices: [" "],
+        stimulus: "<p>Now you can move on to the real choices.</p>"+
+        "<p>You are in a virtual shop where you are choosing between the two foods presented to you. In this shop, the healthy foods are generally better than the unhealthy foods.</p>"+
+        "<p>The healthy foods will always be on the right, and the unhealthy foods will always be on the left.</p>"+
+        //"<p>These are real decisions. Again, at the end of the study you may actually receive a shipment of food based on one of your choices</p>"+
+        "<p>Please press the spacebar to continue to the choices.</p>",
+
+    };
+    var healthyRight_instr_t2 = {
+        type: "html-keyboard-response",
+        choices: [" "],
+        stimulus: "<p>This time, you are in a virtual shop where you are choosing between the two foods presented to you. In this shop, the healthy foods are generally better than the unhealthy foods.</p>"+
+        "<p>The healthy foods will always be on the right, and the unhealthy foods will always be on the left.</p>"+
+        //"<p>These are real decisions. Again, at the end of the study you may actually receive a shipment of food based on one of your choices</p>"+
+        "<p>Please press the spacebar to continue to the choices.</p>",
+
+    };
+
+    var healthyBetterRight_trial = {
+        timeline_variables: [
+        {unhealthy: shuffled_bad_unhealthy_images[0][0], healthy: shuffled_good_healthy_images[0][0]},
+        {unhealthy: shuffled_bad_unhealthy_images[0][1], healthy: shuffled_good_healthy_images[0][1]},
+        ],
+        randomize_order: false,
+        timeline: [
+        fixation,
+        {type: 'econ-choice',
+            stimulus: [jsPsych.timelineVariable('unhealthy'),jsPsych.timelineVariable('healthy')],
+            on_finish: function(data){
+                data.healthychoice = (data.response == 'j');
+                data.task = 'food';
+            }
+        }]
+    };
+    var healthyWorseRight_trial = {
+        timeline_variables: [
+        {unhealthy: shuffled_good_unhealthy_images[0][0], healthy: shuffled_bad_healthy_images[0][0]},
+        {unhealthy: shuffled_good_unhealthy_images[0][1], healthy: shuffled_bad_healthy_images[0][1]},
+        ],
+        randomize_order: false,
+        timeline: [
+        fixation,
+        {type: 'econ-choice',
+            stimulus: [jsPsych.timelineVariable('unhealthy'),jsPsych.timelineVariable('healthy')],
+            on_finish: function(data){
+                data.healthychoice = (data.response == 'j');
+                data.task = 'food';
+            }
+        }]
+    };
+    var healthyBetterLeft_trial = {
+        timeline_variables: [
+        {unhealthy: shuffled_bad_unhealthy_images[0][0], healthy: shuffled_good_healthy_images[0][0]},
+        {unhealthy: shuffled_bad_unhealthy_images[0][1], healthy: shuffled_good_healthy_images[0][1]},
+        ],
+        randomize_order: false,
+        timeline: [
+        fixation,
+        {type: 'econ-choice',
+            stimulus: [jsPsych.timelineVariable('healthy'),jsPsych.timelineVariable('unhealthy')],
+            on_finish: function(data){
+                data.healthychoice = (data.response == 'f');
+                data.task = 'food';
+            }
+        }]
+    };
+    var healthyWorseLeft_trial = {
+        timeline_variables: [
+        {unhealthy: shuffled_good_unhealthy_images[0][0], healthy: shuffled_bad_healthy_images[0][0]},
+        {unhealthy: shuffled_good_unhealthy_images[0][1], healthy: shuffled_bad_healthy_images[0][1]},
+        ],
+        randomize_order: false,
+        timeline: [
+        fixation,
+        {type: 'econ-choice',
+            stimulus: [jsPsych.timelineVariable('healthy'),jsPsych.timelineVariable('unhealthy')],
+            on_finish: function(data){
+                data.healthychoice = (data.response == 'f');
+                data.task = 'food';
+            }
+        }]
+    };
+
+
+    //Randomize sides
+    if(Math.random()>0.5){ //healthy first
+        var store_order = "Healthy First";
+        if(Math.random()>0.5){ //healthy left
+            var store_timeline = {
+                timeline: [healthyLeft_instr_t1, healthyBetterLeft_trial,
+                    unhealthyRight_instr_t2, healthyWorseLeft_trial]
+            };
+            var healthy_side = "Left";
+        }else{
+            var store_timeline = {
+                timeline: [healthyRight_instr_t1, healthyBetterRight_trial,
+                    unhealthyLeft_instr_t2, healthyWorseRight_trial]
+            };
+            var healthy_side = "Right";
+        };
+    } else { //unhealthy first
+        var store_order = "Unhealthy First";
+        if(Math.random()>0.5){ //healthy left
+            var store_timeline = {
+                timeline: [unhealthyLeft_instr_t1, healthyWorseRight_trial,
+                    healthyRight_instr_t2, healthyBetterRight_trial]
+            };
+            var healthy_side = "Right";
+        }else{
+            var store_timeline = {
+                timeline: [unhealthyRight_instr_t1, healthyWorseLeft_trial,
+                    healthyLeft_instr_t2, healthyBetterLeft_trial]
+            };
+            var healthy_side = "Left";
+        };
+    };
+
+    timeline.push(store_timeline);
+
+    // REWARDS/OUTCOMES
+if(real_reward==true){
+   if(testing==true | Math.random() <= (1/50)){
+    var endRewarded = {
+            type: "html-keyboard-response",
+            stimulus: "<p>You have completed the study. Congratulations - you were selected to gain a bonus. Press the spacebar to see your bonus, based on a " +
+                "randomly selected round.</p>",
+            choices: [" "],
+            on_start: function (data) {
+                var rewardData = jsPsych.data.get().filter({ trial_type: 'econ-choice', task: "food" }).values();
+                let rewardObj = jsPsych.randomization.sampleWithoutReplacement(rewardData, 1)[0];
+                window.rewardObj = rewardObj;
+                window.rewardData = rewardData;
+                if (window.rewardObj.response === 'f') {
+                    window.choseLeft = true;
+                    window.rewardStim = rewardObj.stimulus[0];
+                } else {
+                    window.choseLeft = false;
+                    window.rewardStim = rewardObj.stimulus[1];
+                };
+            }
+        };
+    var foodRewardScreen1 = {
+        type: "html-keyboard-response",
+        on_load: function dispStim() {
+            document.getElementById('img').src = rewardStim;
+        },
+        stimulus: "<p>The following food that you chose during the study was chosen randomly to determine your bonus:</p>" +
+            "<div style = 'float: center;'>" +
+            "<img id = 'img' style = 'width: 400px;'></img></div>" +
+            "<p>Press the spacebar to continue.</p>",
+        choices: [" "],
+        on_finish: function(){
+            jsPsych.data.addProperties({
+                reward: rewardStim
+        })
+        }
+    };
+    var address_form = {
+        type: 'survey-text',
+        preamble: "<p>In order to receive your reward, please provide the following information:</p>",
+        questions: [
+            {prompt: "What is your address?", name: 'address'}
+        ],
+    };
+
+    var reward_timeline = {
+        timeline: [endRewarded, foodRewardScreen1, address_form]
+    };
+
+    timeline.push(reward_timeline);
+   } else {
+    var endNoReward = {
+        type: "html-keyboard-response",
+        stimulus: "<p>You have completed the study. Unfortunately, you were not selected to be given a bonus. Press the spacebar to continue.</p>",
+        choices: [" "]
+    };
+    timeline.push(endNoReward);
+   };
+} else {
+    var endNoReward = {
+        type: "html-keyboard-response",
+        stimulus: "<p>You have completed the study. Press the spacebar to continue.</p>",
+        choices: [" "]
+    };
+    timeline.push(endNoReward);
+}
+    jsPsych.init({
+        timeline: timeline,
+        on_finish: function () {
+            jsPsych.data.addProperties({
+                subject: subject_id,
+                reward: window.rewardVal,
+                workerID: turkInfo.workerId,
+                assignmentID: turkInfo.assignmentId,
+                hitID: turkInfo.hitId,
+                storeOrder: store_order,
+                healthySide: healthy_side,
+                practice_fail: practice_fail,
+                failure: 'FALSE'
+            });
+        //$.ajax({
+        //  type: "POST",
+        //  url: "/experiment-data",
+        //  data: JSON.stringify(jsPsych.data.get().values()),
+        //  contentType: "application/json",
+        //  success: window.location.href = "finish"
+        //}).fail(function() {
+       //   alert("A problem occurred while writing to the database. Please contact the researcher for more information.")
+        //  window.location.href = "/";
+       // });
+     }}
+    )
+
+</script>
+
+</html>
