@@ -14,7 +14,7 @@ const starttime = Date.now();
 
 // --- Database SETUP
 const dbx = new Dropbox({
-    accessToken: 'J2slkmJogRYAAAAAAAAAATyjswOL8WGp4mEVoPuRZuWIKYG5dj8mRrO4r7fkzn0m',
+    accessToken: '7-RmJpr-pmYAAAAAAAAAAQQz4oPaT7RiGauxds6OR1Kwni6ATS9M059PeQjJf965',
     fetch
 });
 
